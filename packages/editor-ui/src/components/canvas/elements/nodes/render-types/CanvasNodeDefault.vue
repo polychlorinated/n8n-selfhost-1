@@ -1,13 +1,16 @@
 <script lang="ts" setup>
-import { computed, useCssModule } from 'vue';
+import { computed, ref, useCssModule, watch } from 'vue';
 import { useNodeConnections } from '@/composables/useNodeConnections';
 import { useI18n } from '@/composables/useI18n';
-import CanvasNodeDisabledStrikeThrough from './parts/CanvasNodeDisabledStrikeThrough.vue';
-import CanvasNodeStatusIcons from '@/components/canvas/elements/nodes/render-types/parts/CanvasNodeStatusIcons.vue';
 import { useCanvasNode } from '@/composables/useCanvasNode';
-import { NODE_INSERT_SPACER_BETWEEN_INPUT_GROUPS } from '@/constants';
-import { N8nTooltip } from 'n8n-design-system';
+import {
+	LOCAL_STORAGE_CANVAS_TRIGGER_BUTTON_VARIANT,
+	NODE_INSERT_SPACER_BETWEEN_INPUT_GROUPS,
+} from '@/constants';
 import type { CanvasNodeDefaultRender } from '@/types';
+import { useCanvas } from '@/composables/useCanvas';
+import { useLocalStorage } from '@vueuse/core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const $style = useCssModule();
 const i18n = useI18n();
@@ -16,6 +19,7 @@ const emit = defineEmits<{
 	'open:contextmenu': [event: MouseEvent];
 }>();
 
+const { initialized, viewport } = useCanvas();
 const {
 	label,
 	subtitle,
@@ -105,6 +109,23 @@ const isStrikethroughVisible = computed(() => {
 	return isDisabled.value && isSingleMainInputNode && isSingleMainOutputNode;
 });
 
+const showTooltip = ref(false);
+
+const triggerButtonVariant = useLocalStorage<1 | 2>(LOCAL_STORAGE_CANVAS_TRIGGER_BUTTON_VARIANT, 2);
+
+watch(initialized, () => {
+	if (initialized.value) {
+		showTooltip.value = true;
+	}
+});
+
+watch(viewport, () => {
+	showTooltip.value = false;
+	setTimeout(() => {
+		showTooltip.value = true;
+	}, 0);
+});
+
 function openContextMenu(event: MouseEvent) {
 	emit('open:contextmenu', event);
 }
@@ -112,20 +133,16 @@ function openContextMenu(event: MouseEvent) {
 
 <template>
 	<div :class="classes" :style="styles" :data-test-id="dataTestId" @contextmenu="openContextMenu">
+		<CanvasNodeTooltip v-if="renderOptions.tooltip" :visible="showTooltip" />
 		<slot />
-		<N8nTooltip v-if="renderOptions.trigger" placement="bottom">
-			<template #content>
-				<span v-n8n-html="i18n.baseText('node.thisIsATriggerNode')" />
-			</template>
-			<div :class="$style.triggerIcon">
-				<FontAwesomeIcon icon="bolt" size="lg" />
-			</div>
-		</N8nTooltip>
 		<CanvasNodeStatusIcons v-if="!isDisabled" :class="$style.statusIcons" />
 		<CanvasNodeDisabledStrikeThrough v-if="isStrikethroughVisible" />
 		<div :class="$style.description">
 			<div v-if="label" :class="$style.label">
 				{{ label }}
+				<div v-if="renderOptions.trigger && triggerButtonVariant === 1" :class="$style.triggerIcon">
+					<FontAwesomeIcon icon="bolt" size="lg" />
+				</div>
 			</div>
 			<div v-if="isDisabled" :class="$style.disabledLabel">
 				({{ i18n.baseText('node.disabled') }})
@@ -150,8 +167,9 @@ function openContextMenu(event: MouseEvent) {
 	--configurable-node--icon-offset: 40px;
 	--configurable-node--icon-size: 30px;
 	--trigger-node--border-radius: 36px;
-	--canvas-node--status-icons-offset: var(--spacing-2xs);
+	--canvas-node--status-icons-offset: var(--spacing-3xs);
 
+	position: relative;
 	height: var(--canvas-node--height);
 	width: var(--canvas-node--width);
 	display: flex;
@@ -191,6 +209,12 @@ function openContextMenu(event: MouseEvent) {
 			max(var(--configurable-node--input-count, 4), var(--configurable-node--min-input-count)) *
 				var(--configurable-node--input-width)
 		);
+
+		justify-content: flex-start;
+
+		:global(.n8n-node-icon) {
+			margin-left: var(--configurable-node--icon-offset);
+		}
 
 		.description {
 			top: unset;
@@ -300,10 +324,9 @@ function openContextMenu(event: MouseEvent) {
 }
 
 .triggerIcon {
-	position: absolute;
-	right: 100%;
-	margin: auto;
+	display: inline;
+	position: static;
 	color: var(--color-primary);
-	padding: var(--spacing-2xs);
+	padding: var(--spacing-4xs);
 }
 </style>

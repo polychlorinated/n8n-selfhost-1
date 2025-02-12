@@ -16,10 +16,15 @@ import type { IPinData, ExecutionSummary, IConnection, INodeExecutionData } from
 import { stringSizeInBytes } from '@/utils/typesUtils';
 import { dataPinningEventBus } from '@/event-bus';
 import { useUIStore } from '@/stores/ui.store';
-import type { PushPayload } from '@n8n/api-types';
+import type { PushPayload, FrontendSettings } from '@n8n/api-types';
 import { flushPromises } from '@vue/test-utils';
 import { useNDVStore } from '@/stores/ndv.store';
 import { mock } from 'vitest-mock-extended';
+import { mockedStore, type MockedStore } from '@/__tests__/utils';
+import * as apiUtils from '@/utils/apiUtils';
+import { useSettingsStore } from '@/stores/settings.store';
+import { useLocalStorage } from '@vueuse/core';
+import { ref } from 'vue';
 
 vi.mock('@/stores/ndv.store', () => ({
 	useNDVStore: vi.fn(() => ({
@@ -45,14 +50,24 @@ vi.mock('@/composables/useTelemetry', () => ({
 	useTelemetry: () => ({ track }),
 }));
 
+vi.mock('@vueuse/core', async (importOriginal) => {
+	const actual = await importOriginal<{}>();
+	return {
+		...actual,
+		useLocalStorage: vi.fn().mockReturnValue({ value: undefined }),
+	};
+});
+
 describe('useWorkflowsStore', () => {
 	let workflowsStore: ReturnType<typeof useWorkflowsStore>;
 	let uiStore: ReturnType<typeof useUIStore>;
+	let settingsStore: MockedStore<typeof useSettingsStore>;
 
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		workflowsStore = useWorkflowsStore();
 		uiStore = useUIStore();
+		settingsStore = mockedStore(useSettingsStore);
 		track.mockReset();
 	});
 
@@ -468,7 +483,6 @@ describe('useWorkflowsStore', () => {
 			const expectedName = `${name}${DUPLICATE_POSTFFIX}`;
 			vi.mocked(workflowsApi).getNewWorkflow.mockResolvedValue({
 				name: expectedName,
-				onboardingFlowEnabled: false,
 				settings: {} as IWorkflowSettings,
 			});
 			const newName = await workflowsStore.getDuplicateCurrentWorkflowName(name);
@@ -618,6 +632,95 @@ describe('useWorkflowsStore', () => {
 			});
 		});
 	});
+
+	describe('setNodeValue()', () => {
+		it('should update a node', () => {
+			const nodeName = 'Edit Fields';
+			workflowsStore.addNode({
+				parameters: {},
+				id: '554c7ff4-7ee2-407c-8931-e34234c5056a',
+				name: nodeName,
+				type: 'n8n-nodes-base.set',
+				position: [680, 180],
+				typeVersion: 3.4,
+			});
+
+			expect(workflowsStore.nodeMetadata[nodeName].parametersLastUpdatedAt).toBe(undefined);
+
+			workflowsStore.setNodeValue({ name: 'Edit Fields', key: 'executeOnce', value: true });
+
+			expect(workflowsStore.workflow.nodes[0].executeOnce).toBe(true);
+			expect(workflowsStore.nodeMetadata[nodeName].parametersLastUpdatedAt).toEqual(
+				expect.any(Number),
+			);
+		});
+	});
+
+	describe('setNodePositionById()', () => {
+		it('should NOT update parametersLastUpdatedAt', () => {
+			const nodeName = 'Edit Fields';
+			const nodeId = '554c7ff4-7ee2-407c-8931-e34234c5056a';
+			workflowsStore.addNode({
+				parameters: {},
+				id: nodeId,
+				name: nodeName,
+				type: 'n8n-nodes-base.set',
+				position: [680, 180],
+				typeVersion: 3.4,
+			});
+
+			expect(workflowsStore.nodeMetadata[nodeName].parametersLastUpdatedAt).toBe(undefined);
+
+			workflowsStore.setNodePositionById(nodeId, [0, 0]);
+
+			expect(workflowsStore.workflow.nodes[0].position).toStrictEqual([0, 0]);
+			expect(workflowsStore.nodeMetadata[nodeName].parametersLastUpdatedAt).toBe(undefined);
+		});
+	});
+
+	test.each([
+		// enforce true cases - the version is always the defaultVersion
+		[-1, 1, true, 1], // enforce true, use default (1)
+		[0, 1, true, 1], // enforce true, use default (1)
+		[1, 1, true, 1], // enforce true, use default (1)
+		[2, 1, true, 1], // enforce true, use default (1)
+		[-1, 2, true, 2], // enforce true, use default (2)
+		[0, 2, true, 2], // enforce true, use default (2)
+		[1, 2, true, 2], // enforce true, use default (2)
+		[2, 2, true, 2], // enforce true, use default (2)
+
+		// enforce false cases - check userVersion behavior
+		[-1, 1, false, 1], // userVersion -1, use default (1)
+		[0, 1, false, 1], // userVersion 0, invalid, use default (1)
+		[1, 1, false, 1], // userVersion 1, valid, use userVersion (1)
+		[2, 1, false, 2], // userVersion 2, valid, use userVersion (2)
+		[-1, 2, false, 2], // userVersion -1, use default (2)
+		[0, 2, false, 1], // userVersion 0, invalid, use default (2)
+		[1, 2, false, 1], // userVersion 1, valid, use userVersion (1)
+		[2, 2, false, 2], // userVersion 2, valid, use userVersion (2)
+	] as Array<[number, 1 | 2, boolean, number]>)(
+		'when { userVersion:%s, defaultVersion:%s, enforced:%s } run workflow should use partial execution version %s',
+		async (userVersion, defaultVersion, enforce, expectedVersion) => {
+			vi.mocked(useLocalStorage).mockReturnValueOnce(ref(userVersion));
+			settingsStore.settings = {
+				partialExecution: { version: defaultVersion, enforce },
+			} as FrontendSettings;
+
+			const workflowData = { id: '1', nodes: [], connections: {} };
+			const makeRestApiRequestSpy = vi
+				.spyOn(apiUtils, 'makeRestApiRequest')
+				.mockImplementation(async () => ({}));
+
+			await workflowsStore.runWorkflow({ workflowData });
+
+			expect(makeRestApiRequestSpy).toHaveBeenCalledWith(
+				{ baseUrl: '/rest', pushRef: expect.any(String) },
+				'POST',
+				`/workflows/1/run?partialExecutionVersion=${expectedVersion}`,
+				{ workflowData },
+			);
+		},
+	);
 });
 
 function getMockEditFieldsNode() {
@@ -656,6 +759,7 @@ function generateMockExecutionEvents() {
 		finished: false,
 		mode: 'cli',
 		startedAt: new Date(),
+		createdAt: new Date(),
 		status: 'new',
 		data: {
 			resultData: {

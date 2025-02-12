@@ -6,9 +6,9 @@ exports[`CanvasNodeDefault > configurable > should render configurable node corr
   data-test-id="canvas-configurable-node"
   style="--configurable-node--input-count: 0; --canvas-node--main-input-count: 0; --canvas-node--main-output-count: 0;"
 >
-  
-  
   <!--v-if-->
+  
+  
   <!--v-if-->
   <!--v-if-->
   <div
@@ -17,7 +17,8 @@ exports[`CanvasNodeDefault > configurable > should render configurable node corr
     <div
       class="label"
     >
-      Test Node
+      Test Node 
+      <!--v-if-->
     </div>
     <!--v-if-->
     <div
@@ -35,9 +36,9 @@ exports[`CanvasNodeDefault > configuration > should render configurable configur
   data-test-id="canvas-configurable-node"
   style="--configurable-node--input-count: 0; --canvas-node--main-input-count: 0; --canvas-node--main-output-count: 0;"
 >
-  
-  
   <!--v-if-->
+  
+  
   <!--v-if-->
   <!--v-if-->
   <div
@@ -46,7 +47,8 @@ exports[`CanvasNodeDefault > configuration > should render configurable configur
     <div
       class="label"
     >
-      Test Node
+      Test Node 
+      <!--v-if-->
     </div>
     <!--v-if-->
     <div
@@ -64,9 +66,9 @@ exports[`CanvasNodeDefault > configuration > should render configuration node co
   data-test-id="canvas-configuration-node"
   style="--canvas-node--main-input-count: 0; --canvas-node--main-output-count: 0;"
 >
-  
-  
   <!--v-if-->
+  
+  
   <!--v-if-->
   <!--v-if-->
   <div
@@ -75,7 +77,8 @@ exports[`CanvasNodeDefault > configuration > should render configuration node co
     <div
       class="label"
     >
-      Test Node
+      Test Node 
+      <!--v-if-->
     </div>
     <!--v-if-->
     <div
@@ -93,9 +96,9 @@ exports[`CanvasNodeDefault > should render node correctly 1`] = `
   data-test-id="canvas-default-node"
   style="--canvas-node--main-input-count: 0; --canvas-node--main-output-count: 0;"
 >
-  
-  
   <!--v-if-->
+  
+  
   <!--v-if-->
   <!--v-if-->
   <div
@@ -104,7 +107,8 @@ exports[`CanvasNodeDefault > should render node correctly 1`] = `
     <div
       class="label"
     >
-      Test Node
+      Test Node 
+      <!--v-if-->
     </div>
     <!--v-if-->
     <div
@@ -122,31 +126,8 @@ exports[`CanvasNodeDefault > trigger > should render trigger node correctly 1`] 
   data-test-id="canvas-trigger-node"
   style="--canvas-node--main-input-count: 0; --canvas-node--main-output-count: 0;"
 >
+  <!--v-if-->
   
-  
-  
-  <div
-    class="triggerIcon el-tooltip__trigger el-tooltip__trigger"
-  >
-    <svg
-      aria-hidden="true"
-      class="svg-inline--fa fa-bolt fa-w-10 fa-lg"
-      data-icon="bolt"
-      data-prefix="fas"
-      focusable="false"
-      role="img"
-      viewBox="0 0 320 512"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        class=""
-        d="M296 160H180.6l42.6-129.8C227.2 15 215.7 0 200 0H56C44 0 33.8 8.9 32.2 20.8l-32 240C-1.7 275.2 9.5 288 24 288h118.7L96.6 482.5c-3.6 15.2 8 29.5 23.3 29.5 8.4 0 16.4-4.4 20.8-12l176-304c9.3-15.9-2.2-36-20.7-36z"
-        fill="currentColor"
-      />
-    </svg>
-  </div>
-  <!--teleport start-->
-  <!--teleport end-->
   
   <!--v-if-->
   <!--v-if-->
@@ -156,7 +137,8 @@ exports[`CanvasNodeDefault > trigger > should render trigger node correctly 1`] 
     <div
       class="label"
     >
-      Test Node
+      Test Node 
+      <!--v-if-->
     </div>
     <!--v-if-->
     <div
