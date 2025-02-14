@@ -26,7 +26,7 @@
     "lint": "run lint",
     "lintfix": "run lintfix",
     "optimize-svg": "find ./packages -name '*.svg' ! -name 'pipedrive.svg' -print0 | xargs -0 -P16 -L20 npx svgo",
-    "start": "node packages/cli/bin/n8n start",
+    "start": "node node_modules/n8n/bin/n8n start",
     "start:tunnel": "node packages/cli/bin/n8n start --tunnel",
     "test": "run test",
     "test:backend": "run test:backend --concurrency=1",
