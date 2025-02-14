@@ -7,7 +7,7 @@
     "pnpm": ">=9.15"
   },
   "packageManager": "pnpm@9.15.5",
- "scripts": {
+  "scripts": {
     "preinstall": "node scripts/block-npm-install.js",
     "compile": "tsc -p tsconfig.json",
     "build": "pnpm run build:backend && pnpm run build:frontend",
@@ -36,9 +36,11 @@
     "watch": "pnpm run watch --parallel",
     "webhook": "cd packages/cli/bin && ./n8n webhook",
     "worker": "cd packages/cli/bin && ./n8n worker"
-},
+  },
   "devDependencies": {
     "@types/node": "*",
+    "jest-expect-message": "^1.1.3",
+    "lefthook": "^1.10.10",
     "typescript": "*"
   },
   "pnpm": {
