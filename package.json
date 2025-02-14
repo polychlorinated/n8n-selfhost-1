@@ -26,26 +26,40 @@
     "lint": "run lint",
     "lintfix": "run lintfix",
     "optimize-svg": "find ./packages -name '*.svg' ! -name 'pipedrive.svg' -print0 | xargs -0 -P16 -L20 npx svgo",
-    "start": "node node_modules/n8n/bin/n8n start",
-    "start:tunnel": "node packages/cli/bin/n8n start --tunnel",
+    "start": "cd packages/cli/bin && ./n8n",
+    "start:tunnel": "cd packages/cli/bin && ./n8n start --tunnel",
     "test": "run test",
     "test:backend": "run test:backend --concurrency=1",
     "test:frontend": "run test:frontend --concurrency=1",
     "test:nodes": "run test:nodes --concurrency=1",
     "watch": "run watch --parallel",
-    "webhook": "node packages/cli/bin/n8n webhook",
-    "worker": "node packages/cli/bin/n8n worker"
+    "webhook": "cd packages/cli/bin && ./n8n webhook",
+    "worker": "cd packages/cli/bin && ./n8n worker"
   },
   "devDependencies": {
     "@types/node": "*",
     "typescript": "*"
   },
-  "dependencies": {
-    "semver": "^7.5.4"
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "sqlite3"
+      "@fortawesome/fontawesome-common-types",
+      "@fortawesome/fontawesome-svg-core",
+      "@fortawesome/free-regular-svg-icons",
+      "@fortawesome/free-solid-svg-icons",
+      "@types/express-serve-static-core",
+      "bull",
+      "core-js",
+      "cpu-features",
+      "cypress",
+      "msgpackr-extract",
+      "pkce-challenge",
+      "protobufjs",
+      "pyodide",
+      "sharp",
+      "ssh2",
+      "tree-sitter",
+      "tree-sitter-bash",
+      "vue-demi"
     ],
     "overrides": {
       "@types/node": "^18.16.16",
@@ -53,21 +67,11 @@
       "esbuild": "^0.24.0",
       "formidable": "3.5.1",
       "pug": "^3.0.3",
-      "semver": "^7.5.4",
       "tslib": "^2.6.2",
       "tsconfig-paths": "^4.2.0",
       "typescript": "^5.7.2",
       "vue-tsc": "^2.1.10",
       "ws": ">=8.17.1"
-    },
-    "patchedDependencies": {
-      "bull@4.12.1": "patches/bull@4.12.1.patch",
-      "pkce-challenge@3.0.0": "patches/pkce-challenge@3.0.0.patch",
-      "pyodide@0.23.4": "patches/pyodide@0.23.4.patch",
-      "@types/express-serve-static-core@4.17.43": "patches/@types__express-serve-static-core@4.17.43.patch",
-      "@types/ws@8.5.4": "patches/@types__ws@8.5.4.patch",
-      "@types/uuencode@0.0.3": "patches/@types__uuencode@0.0.3.patch",
-      "vue-tsc@2.1.10": "patches/vue-tsc@2.1.10.patch"
     }
   }
 }
