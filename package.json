@@ -7,17 +7,18 @@
     "pnpm": ">=9.15"
   },
   "packageManager": "pnpm@9.15.5",
-  "scripts": {
+ "scripts": {
     "preinstall": "node scripts/block-npm-install.js",
+    "compile": "tsc -p tsconfig.json",
     "build": "pnpm run build:backend && pnpm run build:frontend",
     "build:backend": "pnpm run compile",
     "build:frontend": "pnpm run compile",
     "build:nodes": "pnpm run compile",
-    "typecheck": "pnpm run typecheck",
+    "typecheck": "tsc --noEmit",
     "dev": "pnpm run dev --parallel --env-mode=loose --filter=!n8n-design-system --filter=!@n8n/chat --filter=!@n8n/task-runner",
     "dev:be": "pnpm run dev --parallel --env-mode=loose --filter=!n8n-design-system --filter=!@n8n/chat --filter=!@n8n/task-runner --filter=!n8n-editor-ui",
     "dev:ai": "pnpm run dev --parallel --env-mode=loose --filter=@n8n/nodes-langchain --filter=n8n --filter=n8n-core",
-    "dev:fe": "pnpm run start \"dev:fe:editor --filter=n8n-design-system\"",
+    "dev:fe": "pnpm run dev:fe:editor --filter=n8n-design-system",
     "dev:fe:editor": "pnpm run dev --parallel --env-mode=loose --filter=n8n-editor-ui",
     "clean": "pnpm run clean --parallel",
     "reset": "node scripts/ensure-zx.mjs && zx scripts/reset.mjs",
@@ -29,13 +30,13 @@
     "start": "node packages/cli/bin/n8n start",
     "start:tunnel": "cd packages/cli/bin && ./n8n start --tunnel",
     "test": "pnpm run test",
-    "test:backend": "pnpm run test:backend --concurrency=1",
-    "test:frontend": "pnpm run test:frontend --concurrency=1",
-    "test:nodes": "pnpm run test:nodes --concurrency=1",
+    "test:backend": "pnpm run test --filter=n8n-core",
+    "test:frontend": "pnpm run test --filter=n8n-editor-ui",
+    "test:nodes": "pnpm run test --filter=@n8n/nodes-*",
     "watch": "pnpm run watch --parallel",
     "webhook": "cd packages/cli/bin && ./n8n webhook",
     "worker": "cd packages/cli/bin && ./n8n worker"
-  },
+},
   "devDependencies": {
     "@types/node": "*",
     "typescript": "*"
