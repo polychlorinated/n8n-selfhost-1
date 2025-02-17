@@ -1,0 +1,80 @@
+{
+  "name": "n8n-monorepo",
+  "version": "1.78.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.15",
+    "pnpm": ">=9.15"
+  },
+  "packageManager": "pnpm@9.15.5",
+  "scripts": {
+    "preinstall": "node scripts/block-npm-install.js",
+    "compile": "tsc -p tsconfig.json",
+    "build": "pnpm run build:backend && pnpm run build:frontend",
+    "build:backend": "pnpm run compile",
+    "build:frontend": "pnpm run compile",
+    "build:nodes": "pnpm run compile",
+    "typecheck": "tsc --noEmit",
+    "dev": "pnpm run dev --parallel --env-mode=loose --filter=!n8n-design-system --filter=!@n8n/chat --filter=!@n8n/task-runner",
+    "dev:be": "pnpm run dev --parallel --env-mode=loose --filter=!n8n-design-system --filter=!@n8n/chat --filter=!@n8n/task-runner --filter=!n8n-editor-ui",
+    "dev:ai": "pnpm run dev --parallel --env-mode=loose --filter=@n8n/nodes-langchain --filter=n8n --filter=n8n-core",
+    "dev:fe": "pnpm run dev:fe:editor --filter=n8n-design-system",
+    "dev:fe:editor": "pnpm run dev --parallel --env-mode=loose --filter=n8n-editor-ui",
+    "clean": "pnpm run clean --parallel",
+    "reset": "node scripts/ensure-zx.mjs && zx scripts/reset.mjs",
+    "format": "pnpm run format && node scripts/format.mjs",
+    "format:check": "pnpm run format:check",
+    "lint": "pnpm run lint",
+    "lintfix": "pnpm run lintfix",
+    "optimize-svg": "find ./packages -name '*.svg' ! -name 'pipedrive.svg' -print0 | xargs -0 -P16 -L20 npx svgo",
+    "start": "node packages/cli/bin/n8n start",
+    "start:tunnel": "cd packages/cli/bin && ./n8n start --tunnel",
+    "test": "pnpm run test",
+    "test:backend": "pnpm run test --filter=n8n-core",
+    "test:frontend": "pnpm run test --filter=n8n-editor-ui",
+    "test:nodes": "pnpm run test --filter=@n8n/nodes-*",
+    "watch": "pnpm run watch --parallel",
+    "webhook": "cd packages/cli/bin && ./n8n webhook",
+    "worker": "cd packages/cli/bin && ./n8n worker"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "jest-expect-message": "^1.1.3",
+    "lefthook": "^1.10.10",
+    "typescript": "*"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@fortawesome/fontawesome-common-types",
+      "@fortawesome/fontawesome-svg-core",
+      "@fortawesome/free-regular-svg-icons",
+      "@fortawesome/free-solid-svg-icons",
+      "@types/express-serve-static-core",
+      "bull",
+      "core-js",
+      "cpu-features",
+      "cypress",
+      "msgpackr-extract",
+      "pkce-challenge",
+      "protobufjs",
+      "pyodide",
+      "sharp",
+      "ssh2",
+      "tree-sitter",
+      "tree-sitter-bash",
+      "vue-demi"
+    ],
+    "overrides": {
+      "@types/node": "^18.16.16",
+      "chokidar": "^4.0.1",
+      "esbuild": "^0.24.0",
+      "formidable": "3.5.1",
+      "pug": "^3.0.3",
+      "tslib": "^2.6.2",
+      "tsconfig-paths": "^4.2.0",
+      "typescript": "^5.7.2",
+      "vue-tsc": "^2.1.10",
+      "ws": ">=8.17.1"
+    }
+  }
+}

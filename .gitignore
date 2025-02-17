@@ -1,4 +1,4 @@
-# Ignore system files and user-specific configs
+echo "# Ignore system files
 .bash_history
 .bashrc
 .cache/
@@ -46,27 +46,4 @@ build-storybook.log
 nodelinter.config.json
 
 # Ignore package lock files globally
-**/package-lock.jsonnode_modules
-.DS_Store
-.tmp
-tmp
-dist
-coverage
-npm-debug.log*
-yarn.lock
-google-generated-credentials.json
-_START_PACKAGE
-.env
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.default.json
-.idea
-nodelinter.config.json
-**/package-lock.json
-packages/**/.turbo
-.turbo
-*.tsbuildinfo
-*.swp
-CHANGELOG-*.md
-*.mdx
-build-storybook.log
+**/package-lock.json" > .gitignore
