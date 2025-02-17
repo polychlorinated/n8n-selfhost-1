@@ -1,0 +1,72 @@
+# Ignore system files and user-specific configs
+.bash_history
+.bashrc
+.cache/
+.gitconfig
+.lesshst
+.npm/
+.profile
+.sqlite_history
+.ssh/
+snap/
+
+# Ignore sensitive environment and credential files
+.env
+config
+google-generated-credentials.json
+
+# Ignore n8n runtime files (DO NOT PUSH DATABASE FILES)
+.n8n/
+database.sqlite
+database-backup.sqlite
+n8nEventLog*.log
+
+# Ignore build and temp files
+node_modules/
+.DS_Store
+.tmp
+tmp
+dist/
+coverage/
+npm-debug.log*
+yarn.lock
+packages/**/.turbo
+.turbo
+*.tsbuildinfo
+*.swp
+CHANGELOG-*.md
+*.mdx
+build-storybook.log
+
+# Ignore IDE and editor settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.default.json
+.idea/
+nodelinter.config.json
+
+# Ignore package lock files globally
+**/package-lock.jsonnode_modules
+.DS_Store
+.tmp
+tmp
+dist
+coverage
+npm-debug.log*
+yarn.lock
+google-generated-credentials.json
+_START_PACKAGE
+.env
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.default.json
+.idea
+nodelinter.config.json
+**/package-lock.json
+packages/**/.turbo
+.turbo
+*.tsbuildinfo
+*.swp
+CHANGELOG-*.md
+*.mdx
+build-storybook.log
